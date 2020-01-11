@@ -1,0 +1,11 @@
+{
+  "name": "payspec-bot",
+  "version": "0.1.0",
+  "description": "A NodeJS bot that assists with the creation of PaySpec invoices, the storage of history of created invoices, and the retrieval of invoice data including whether or not they were fulfilled.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "admazzola",
+  "license": "MIT"
+}
