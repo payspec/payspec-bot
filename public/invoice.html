@@ -1,206 +1,402 @@
+
+
+
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
-    <title>SendERC - Invoice</title>
+<html lang="en"><head><link href="/app/assets/main.css" rel="stylesheet"></head>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="icon" type="image/png" href="/app/assets/images/0xbitcoin.png" />
+
+<title>Payspec</title>
+
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" type="image/png" sizes="32x32" href="../app/assets/images/favicon.png">
 
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
 
+      <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Raleway|Roboto" rel="stylesheet">
 
-  <link href="/app/assets/main.css" rel="stylesheet"></head>
-  <body>
 
-        
-<nav id="navbar" class="navbar slate-theme-dark has-shadow" role="navigation" aria-label="main navigation">
-       <div class="navbar-brand" style="padding-left:10px; padding-right:10px;">
-         <a class="navbar-item" href="/">
-           <img :src="brandImageUrl" style="border-radius:50%" height="28" width="28" />
-         </a>
+
+  <body id ="invoice">
+    <!-- header -->
+    <div class="hero-head">
+      <section class="hero is-primary is-medium" id="contact">
+	<div class="hero-body">
+
+    <div class="container">
+
+
+      <div id="eth-container" class="eth-container box" v-cloak    >
+
+
+        <div class="columns">
+
+          <div class="column" v-if="connected">
+            <div class="is-centered" >
+              <span class="tag is-size-6"> Connected: <i class="fab fa-ethereum has-text-success is-size-5" style="margin-left:1em;margin-right:0.5em"></i>  {{networkMode}}  </span>
+
+            </div>
+          </div>
+
+               <div class="column">
+
+                 <div v-if="!connected" >
+                   <div class="button is-secondary btn-action-connect-web3"> Connect To Metamask </div>
+                 </div>
+
+
+                 <div v-if="paySpecAddress">
+
+                   <span class="tag is-size-6">PaySpec Contract </span> <br> <a target='_blank' v-bind:href='paySpecEtherscanURL'>{{paySpecAddress}}</a>
+                 </div>
+
+               </div>
+               <div class="column">
+
+                 <div v-if="web3address">
+
+                   <span class="tag is-size-6">Connected Account </span><br> <a target='_blank' v-bind:href='etherscanURL'>{{web3address}}</a>
+                 </div>
+
+
+               </div>
+        </div>
+
+        <div class="columns alert-container notification is-danger" v-if="errorMessage" >
+
+             {{ errorMessage }}
+
        </div>
 
+      </div>
 
 
-    <div class="navbar-menu-mobile is-hidden " style="display: flex;align-items: stretch;justify-content: flex-start;flex-grow: 1;flex-shrink: 0;">
-      <a href="/account" target="_blank" class=" " >
-        <div class='navbar-item hover-line-blue'>Account Shares</div>
-      </a>
+    </div> <!-- container-->
 
-      <a href="/overview" target="_blank" class=" " style="margin-right: 10px;">
-        <div class='navbar-item hover-line-green'>Server Statistics</div>
-      </a>
-    </div>
+    <div class="whitespace-md"></div>
 
-  <div class="navbar-menu">
-    <div class="navbar-start">
+	  <div class="container" id='invoice-data'  v-cloak>
 
-      <a href="/account" target="_blank" class="is-pulled-right" >
-        <div class='navbar-item hover-line-blue'>Account Shares</div>
-      </a>
+      <div class="columns" v-if='invoiceExists' >
+        <div class="column">
 
-      <a href="/overview" target="_blank" class="is-pulled-right" style="margin-right: 10px;">
-        <div class='navbar-item hover-line-green'>Server Statistics</div>
-      </a>
+          <h2> Invoice QR Code (EIP 681) </h2>
+          <canvas id='qr-code-canvas' height='512' width='512'>
 
-    </div>
-
-
-     <div class="navbar-end  " style="padding-right:10px;">
-
-
-             <div class="field is-grouped">
-               <div class="control">
-                <a class="button button-primary is-shadowless" target="_blank" href="https://github.com/0xbitcoin/tokenpool">
-                  <!--<span class="icon">
-                    <i class="material-icons"></i>
-                  </span> !-->
-                  <span>
-                    Github
-                  </span>
-            </a>
-          </div>
-
-
-        <div class="control">
-           <a class="button button-primary is-shadowless"  target="_blank" href="https://discord.gg/QtyRxzw">
-             <!--<span class="icon">
-               <i class="material-icons"></i>
-             </span> !-->
-             <span>
-               Discord
-             </span>
-           </a>
-         </div>
+          </canvas>
 
         </div>
 
-    </div>
+        <div class="column">
+          <div class="container" >
 
-    </div>
+            <div class="table-container">
 
-   </div>
-</nav>
+              <h2> Invoice Data </h2>
+              <table class="table is-bordered">
+                <thead>
 
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>UUID </td>
+                    <td>{{ invoiceUUID }}</td>
+                  </tr>
+                  <tr>
+                    <td>Description </td>
+                    <td>{{ description }}</td>
+                  </tr>
+                  <tr>
+                    <td>Reference Number </td>
+                    <td>{{ referenceNumber }}</td>
+                  </tr>
+                  <tr>
+                    <td>Recipient Address </td>
+                    <td>{{ recipientAddress }}</td>
+                  </tr>
 
+                  <tr>
+                    <td>Token Address </td>
+                    <td>{{ tokenAddress }}</td>
+                  </tr>
+                  <tr>
+                    <td>Token Amount Due</td>
+                    <td>{{ tokenAmount }}</td>
+                  </tr>
+                  <tr>
+                    <td>Paid?</td>
+                    <td>{{ paidStatus }}</td>
+                  </tr>
+                </tbody>
+              </table>
 
-<div class="page-container slate-theme" id="account">
+            </div>
 
-      <section class="hero">
-        <div class="hero-body">
-          <div class="container has-text-centered">
-            <h1 class="title font-primary-title color-primary">
-              Mining Account List
-            </h1>
-            <h2 class="subtitle">
-             Token Mining Pool
-            </h2>
-
-
-
-             <div class="whitespace-sm"></div>
-
-
-
-      <!--      <div id="view-account-form" class="box has-text-centered">
-
-             <input class="" v-model="mining_address" placeholder="Mining address">
-
-             <div class="button-bubble button-primary view-account-button acts-as-link"> View your Shares </div>
 
           </div>
-        -->
-
-
-
         </div>
+      </div><!--columns-->
+
+      <div class="container" v-if='!invoiceExists'>
+
+      <div class="centered">
+          Searching for invoice...
+      </div>
+
+      <br>
+
+      <div class="centered">
+        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+        <span class="sr-only">Loading...</span>
+      </div>
+
+      </div>
+
+      </div><!--container-->
+
+
+
+	    <div class="header-buttons pull-right">
+
+        <span class="control ">
+          <a class="button is-info is-size-5" target="_blank" href="https://github.com/payspec">
+            <span class="icon">
+              <i class="fab fa-github"></i>
+            </span>
+            <span>Github</span>
+          </a>
+        </span>
+
+	      <span class="control ">
+      		<a class="button is-info is-size-5" target="_blank" href="https://github.com/payspec">
+      		  <span class="icon">
+      		    <i class="fab fa-ethereum"></i>
+      		  </span>
+      		  <span>PaySpec API</span>
+      		</a>
+	      </span>
+
+	    </div>
+
+
+
+	  </div> <!-- hero body -->
+
       </section>
+    </div> <!-- hero head -->
+    <!-- end of header -->
 
-      <div id="accountlist" class="box  background-secondary" style="overflow-x:auto; min-height:480px;">
-        <div class='subtitle'>Miners</div>
-        <table class='table table-dark zeroauto'>
-
-          <thead>
-            <tr >
-              <td> Miner # </td>
-
-              <td> Eth Address </td>
-              <td> Hash Rate </td>
-              <td> Share % </td>
-              <td> Pending Token Balance </td>
-              <td> Total Tokens Earned </td>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            <tr v-for="(item, index) in accounts.account_list">
-              <td> Miner {{ index }} </td>
-
-
-                <td>
-                      <a v-bind:href='item.profileURL' >
-                        <p>  {{ item.minerAddress }}  </p>
-                      </a>
-                </td>
-
-              <td> {{ item.sharesData.hashRateFormatted }} </td>
-
-              <td>  {{ item.sharesData.sharesPercent}} </td>
-              <td>  {{ item.minerData.tokenBalanceFormatted }} </td>
-              <td>  {{ item.minerData.tokenRewardsFormatted }} </td>
-            </tr>
-
-
-          </tbody>
-        </table>
-
-      </div>
-
-          <!--
-      <div id="poolstats" class="box  " style="overflow-x:auto; min-height:480px;">
-        <div class='subtitle'>Pool Stats</div>
-        <table class='table'>
-
-          <tbody>
-            <tr> <td> Network: MAINNET </td> </tr>
-          </tbody>
-        </table>
-
-      </div>
-
-    -->
+    <!-- example content block -->
+    <div class="content-block">
+      <section class="hero">
+  	<div class="hero-body">
+  	  <div class="container">
 
 
 
 
 
-      <div id="about" class="   background-secondary has-text-centered">
 
-        <div class="whitespace-sm"></div>
-        <div class='title'> Token Mining Pool </div>
-        <div class="whitespace-sm"></div>
-        <div class='subtitle '> Mine Ethereum tokens distributed using Proof of Work </div>
+      <div class="columns">
+
+        <div class="content column is-6 is-offset-3">
 
 
-        <div class="">
+          <div id="pay-invoice-input" class="main-text box" v-if="!paidStatus" v-cloak    >
+
+
+          <div class="whitespace-md"></div>
+
+
+          <div class="columns" >
+            <div class="column">
+               <h4 class=" is-size-4 is-4 is-spaced">Pay Invoice</h4>
+            </div>
+            <!-- <div class="column">
+              <div class="pull-right" v-if='showAvailability' v-cloak>
+                <span class="tag is-success" v-if='nametagAvailable'>Available</span>
+                <span class="tag is-danger" v-if='!nametagAvailable'>Not Available</span>
+              </div>
+            </div> -->
+          </div>
+
+
+          <div class="field">
+            <label class="label"> Invoice ID </label>
+            <div class="control">
+              <input class="input is-large   " type="text" placeholder=" "  v-on:change="inputChange" v-on:keyup="keyUp" v-model='invoiceUUID'>
+            </div>
+           </div>
+
+
+
+            <div class="pull-right">
+              <div   class="button is-large" v-on:click='onSubmitNewInvoice'>
+                <span class=" ">
+                  <i class="fab fa-ethereum" style="margin-right:1em"></i>
+                </span>
+                <span> Submit </span>
+              </div>
+            </div>
+
+
+            </div>
 
         </div>
 
-        <div class="">
-          <p> Read more on <a href="https://reddit.com/r/tokenmining" target="_blank"> Reddit </a> </p>
 
-
-        </div>
       </div>
 
 
-  </div>
 
 
-      <footer class="footer slate-theme-dark">
+      <div class="columns">
+
+        <div class="content column is-6 is-offset-3">
+
+
+          <div id="approve-tokens-input" class="main-text box"  v-if="!paidStatus" v-cloak    >
+
+
+          <div class="whitespace-md"></div>
+
+
+          <div class="columns">
+            <div class="column">
+               <h4 class=" is-size-4 is-4 is-spaced">ApproveTokens</h4>
+            </div>
+            <!-- <div class="column">
+              <div class="pull-right" v-if='showAvailability' v-cloak>
+                <span class="tag is-success" v-if='nametagAvailable'>Available</span>
+                <span class="tag is-danger" v-if='!nametagAvailable'>Not Available</span>
+              </div>
+            </div> -->
+          </div>
+
+
+          <div class="field">
+            <label class="label"> Contract Address </label>
+            <div class="control">
+              <input class="input is-large   " type="text" placeholder=" "  v-on:change="inputChange" v-on:keyup="keyUp" v-model='contractAddress'>
+            </div>
+           </div>
+
+           <div class="field">
+             <label class="label"> Token Address </label>
+             <div class="control">
+               <input class="input is-large   " type="text" placeholder=" "  v-on:change="inputChange" v-on:keyup="keyUp" v-model='tokenAddress'>
+             </div>
+            </div>
+
+            <div class="field">
+              <label class="label"> Amount </label>
+              <div class="control">
+                <input class="input is-large   " type="text" placeholder=" "  v-on:change="inputChange" v-on:keyup="keyUp" v-model='amount'>
+              </div>
+             </div>
+
+
+
+            <div class="pull-right">
+              <div   class="button is-large" v-on:click='onSubmit'>
+                <span class=" ">
+                  <i class="fab fa-ethereum" style="margin-right:1em"></i>
+                </span>
+                <span> Submit </span>
+              </div>
+            </div>
+
+
+            </div>
+
+        </div>
+
+
+      </div>
+
+
+
+	  </div>
+	</div>
+      </section>
+      <hr/>
+
+    </div>
+    <!-- end of example block -->
+
+    <!-- example content block -->
+    <div class="content-block">
+      <section class="hero">
+
+	<div class="hero-body">
+
+
+  <!--  <div class="container" style="height:200px;" >
+      <div class="content" id="personalnameslist" v-if="list.length > 0" v-cloak>
+        <h4 class="title is-4">My Nametags</h4>
+        <div class="recent-tags-list blue-links" >
+
+            <span class="tag is-size-4" v-for="item in list"> <a v-bind:href="item.tokenURL" target="_blank"> {{item.tokenName}} </a> </span>
+
+
+      </div>
+        <div class="columns is-multiline">
+        <div class="column is-6">
+
+        </div>
+        <div class="column is-6">
+
+        </div>
+        </div>
+      </div>
+    </div>-->
+
+
+
+	 <!-- <div class="container" style="height:200px;" >
+	    <div class="content" id="recentnameslist" v-if="list.length > 0" v-cloak>
+	      <h4 class="title is-4">Recent Nametags</h4>
+	      <div class="recent-tags-list blue-links" >
+
+            <span class="tag is-size-4" v-for="item in list"> <a v-bind:href="item.tokenURL" target="_blank"> {{item.tokenName}} </a> </span>
+
+
+      </div>
+	      <div class="columns is-multiline">
+    		<div class="column is-6">
+
+    		</div>
+    		<div class="column is-6">
+
+    		</div>
+	      </div>
+	    </div>
+	  </div>-->
+
+
+
+
+
+
+	</div><!-- hero body -->
+
+      </section>
+      <hr/>
+    </div>
+    <!-- end of example block -->
+
+
+
+
+
+    <footer class="footer slate-theme-dark">
    <div class="container">
      <div class="content has-text-centered">
        <p>
@@ -217,5 +413,6 @@
 
 
 
-  <script type="text/javascript" src="/main.9490f5c7b8bd6c073b91.js"></script></body>
+
+  <script type="text/javascript" src="/main.b43c388b639c83f4554a.js"></script></body>
 </html>
