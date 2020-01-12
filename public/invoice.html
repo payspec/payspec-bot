@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <title>SendERC - Invoice</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" type="image/png" href="/app/assets/images/0xbitcoin.png" />
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+
+
+  <link href="/app/assets/main.css" rel="stylesheet"></head>
+  <body>
+
+        
+<nav id="navbar" class="navbar slate-theme-dark has-shadow" role="navigation" aria-label="main navigation">
+       <div class="navbar-brand" style="padding-left:10px; padding-right:10px;">
+         <a class="navbar-item" href="/">
+           <img :src="brandImageUrl" style="border-radius:50%" height="28" width="28" />
+         </a>
+       </div>
+
+
+
+    <div class="navbar-menu-mobile is-hidden " style="display: flex;align-items: stretch;justify-content: flex-start;flex-grow: 1;flex-shrink: 0;">
+      <a href="/account" target="_blank" class=" " >
+        <div class='navbar-item hover-line-blue'>Account Shares</div>
+      </a>
+
+      <a href="/overview" target="_blank" class=" " style="margin-right: 10px;">
+        <div class='navbar-item hover-line-green'>Server Statistics</div>
+      </a>
+    </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+
+      <a href="/account" target="_blank" class="is-pulled-right" >
+        <div class='navbar-item hover-line-blue'>Account Shares</div>
+      </a>
+
+      <a href="/overview" target="_blank" class="is-pulled-right" style="margin-right: 10px;">
+        <div class='navbar-item hover-line-green'>Server Statistics</div>
+      </a>
+
+    </div>
+
+
+     <div class="navbar-end  " style="padding-right:10px;">
+
+
+             <div class="field is-grouped">
+               <div class="control">
+                <a class="button button-primary is-shadowless" target="_blank" href="https://github.com/0xbitcoin/tokenpool">
+                  <!--<span class="icon">
+                    <i class="material-icons"></i>
+                  </span> !-->
+                  <span>
+                    Github
+                  </span>
+            </a>
+          </div>
+
+
+        <div class="control">
+           <a class="button button-primary is-shadowless"  target="_blank" href="https://discord.gg/QtyRxzw">
+             <!--<span class="icon">
+               <i class="material-icons"></i>
+             </span> !-->
+             <span>
+               Discord
+             </span>
+           </a>
+         </div>
+
+        </div>
+
+    </div>
+
+    </div>
+
+   </div>
+</nav>
+
+
+
+<div class="page-container slate-theme" id="account">
+
+      <section class="hero">
+        <div class="hero-body">
+          <div class="container has-text-centered">
+            <h1 class="title font-primary-title color-primary">
+              Mining Account List
+            </h1>
+            <h2 class="subtitle">
+             Token Mining Pool
+            </h2>
+
+
+
+             <div class="whitespace-sm"></div>
+
+
+
+      <!--      <div id="view-account-form" class="box has-text-centered">
+
+             <input class="" v-model="mining_address" placeholder="Mining address">
+
+             <div class="button-bubble button-primary view-account-button acts-as-link"> View your Shares </div>
+
+          </div>
+        -->
+
+
+
+        </div>
+      </section>
+
+      <div id="accountlist" class="box  background-secondary" style="overflow-x:auto; min-height:480px;">
+        <div class='subtitle'>Miners</div>
+        <table class='table table-dark zeroauto'>
+
+          <thead>
+            <tr >
+              <td> Miner # </td>
+
+              <td> Eth Address </td>
+              <td> Hash Rate </td>
+              <td> Share % </td>
+              <td> Pending Token Balance </td>
+              <td> Total Tokens Earned </td>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr v-for="(item, index) in accounts.account_list">
+              <td> Miner {{ index }} </td>
+
+
+                <td>
+                      <a v-bind:href='item.profileURL' >
+                        <p>  {{ item.minerAddress }}  </p>
+                      </a>
+                </td>
+
+              <td> {{ item.sharesData.hashRateFormatted }} </td>
+
+              <td>  {{ item.sharesData.sharesPercent}} </td>
+              <td>  {{ item.minerData.tokenBalanceFormatted }} </td>
+              <td>  {{ item.minerData.tokenRewardsFormatted }} </td>
+            </tr>
+
+
+          </tbody>
+        </table>
+
+      </div>
+
+          <!--
+      <div id="poolstats" class="box  " style="overflow-x:auto; min-height:480px;">
+        <div class='subtitle'>Pool Stats</div>
+        <table class='table'>
+
+          <tbody>
+            <tr> <td> Network: MAINNET </td> </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+    -->
+
+
+
+
+
+      <div id="about" class="   background-secondary has-text-centered">
+
+        <div class="whitespace-sm"></div>
+        <div class='title'> Token Mining Pool </div>
+        <div class="whitespace-sm"></div>
+        <div class='subtitle '> Mine Ethereum tokens distributed using Proof of Work </div>
+
+
+        <div class="">
+
+        </div>
+
+        <div class="">
+          <p> Read more on <a href="https://reddit.com/r/tokenmining" target="_blank"> Reddit </a> </p>
+
+
+        </div>
+      </div>
+
+
+  </div>
+
+
+      <footer class="footer slate-theme-dark">
+   <div class="container">
+     <div class="content has-text-centered">
+       <p>
+         <strong>0xBitcoin</strong> Secure, fast digital payments.
+
+          <br>
+          The source code is licensed
+         <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+         is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+       </p>
+     </div>
+   </div>
+ </footer>
+
+
+
+  <script type="text/javascript" src="/main.9490f5c7b8bd6c073b91.js"></script></body>
+</html>
