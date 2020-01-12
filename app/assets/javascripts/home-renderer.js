@@ -11,8 +11,9 @@ var BigNumber = require('bignumber.js')
 var ethereumHelper;
 var web3utils = require('web3-utils')
 
-const ContractInterface = require('./contract-interface')
 
+import ContractInterface from './contract-interface'
+ 
 
 var app;
 var dashboardData;

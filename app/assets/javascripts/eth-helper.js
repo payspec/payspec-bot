@@ -20,8 +20,9 @@ var erc20TokenContract = require('../contracts/ERC20Interface.json')
 
 //import TokenUtils from './token-utils'
 
-const ContractInterface = require('./contract-interface')
 
+import ContractInterface from './contract-interface'
+ 
 import Vue from 'vue'
 
 
@@ -212,14 +213,17 @@ export default class EthHelper {
         await Vue.set(ethContainer, "networkMode" , 'Ropsten');
      }
 
-      console.log('Eth Env:',env)
+      console.log('Eth Env 2:',env)
 
 
+      //failing here ??
 
+      console.log(ContractInterface)
 
      var paySpecAddress = ContractInterface.getPaySpecAddress( env );
      var etherscanAddress = ContractInterface.getEtherscanBaseURL( env );
 
+     console.log('pay spec address',paySpecAddress)
 
      await Vue.set(ethContainer, "paySpecAddress" , paySpecAddress);
      await Vue.set(ethContainer, "paySpecEtherscanURL" , etherscanAddress+'/address/'+paySpecAddress);
