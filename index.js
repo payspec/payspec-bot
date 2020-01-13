@@ -1,4 +1,3 @@
-console.log('hi')
 
 
 var mongoInitParam;
@@ -13,6 +12,9 @@ init();
 
 async function init()
 {
+  console.log('hi')
+
+
   await mongoInterface.init(mongoInitParam)
 
   await peerInterface.init(mongoInterface) //initJSONRPCServer();
