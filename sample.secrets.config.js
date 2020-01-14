@@ -1,26 +1,22 @@
-var accounts = {
 
-  //ethereum address where money from paid invoices will be deposited
-  recipient: {
-    address: '0xf3243bAbF74Ead828ac656877137Df705868fD66'
+var secrets = {
+  accounts:{
+
+    recipient: {
+      address: '0x530d92dfb5caa11347F26eE741910Dee6eed3208'
+    },
+
+    msgsender: {
+      address: '0xf3243bAbF74Ead828ac656877137Df705868fD66',
+      privateKey: '00000'
+    }
   },
+    web3:{
+     ropstenURL: 'https://ropsten.infura.io/v3/xxx',
+     mainnetURL: 'https://mainnet.infura.io/v3/xxx'
 
-  //ethereum account that will execute onchain Ethereum methods
-  msgsender: {
-    address: '0xf3243bAbF74Ead828ac656877137Df705868fD66',
-    privateKey: '00000'
-  },
-
-
-
+    }
 
 }
 
-var web3 = {
-  ropstenURL: 'https://ropsten.infura.io/v3/xxx';
-  mainnetURL: 'https://mainnet.infura.io/v3/xxx';
-
-}
-
-exports = {accounts:accounts, web3: web3}
-//exports.accounts = accounts
+exports.secrets = secrets
