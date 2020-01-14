@@ -17,7 +17,7 @@ var environment = process.env.NODE_ENV || 'development';
 // the clean options to use
 let cleanOptions = {
   verbose:  true,
-  dry:      true,
+  dry:      false,
   cleanOnceBeforeBuildPatterns: ['/public/*' ],
 }
 
