@@ -469,16 +469,16 @@ export default class InvoiceRenderer {
 
        var currentEthBlock = await ethereumHelper.getCurrentEthBlockNumber()
 
-       var ethBlockExpiresAt = currentEthBlock + 2000
+    //   var ethBlockExpiresAt = currentEthBlock + 2000
       //web3.eth.defaultAccount = web3.eth.accounts[0]
        //personal.unlockAccount(web3.eth.defaultAccount)
 
 
       // await web3.eth.enable();
 //createAndPayInvoice(uint256 refNumber, string memory description,  address token, uint256 amountDue, address payTo, uint256 ethBlockExpiresAt )
-  console.log('send data', invoice.refNumber, invoice.description, invoice.tokenAddress, invoice.amountDue, invoice.recipientAddress, ethBlockExpiresAt)
+  console.log('send data', invoice.refNumber, invoice.description, invoice.tokenAddress, invoice.amountDue, invoice.recipientAddress, invoice.ethBlockExpiresAt)
       var response =  await new Promise(function (result,error) {
-         paySpecContract.createAndPayInvoice.sendTransaction(invoice.refNumber, invoice.description, invoice.tokenAddress, invoice.amountDue, invoice.recipientAddress, ethBlockExpiresAt, function(err,res){
+         paySpecContract.createAndPayInvoice.sendTransaction(invoice.refNumber, invoice.description, invoice.tokenAddress, invoice.amountDue, invoice.recipientAddress, invoice.ethBlockExpiresAt, function(err,res){
             if(err){ return error(err)}
 
             result(res);

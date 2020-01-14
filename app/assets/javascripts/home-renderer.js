@@ -13,7 +13,7 @@ var web3utils = require('web3-utils')
 
 
 import ContractInterface from './contract-interface'
- 
+
 
 var app;
 var dashboardData;
@@ -77,7 +77,7 @@ export default class HomeRenderer {
                     tokenAmount:this.tokenAmount,
                     description:this.description,
                     refNumber:this.refNumber,
-                    blockExpiresAt:0
+                    ethBlockExpiresAt:0
                   }
 
 
@@ -199,7 +199,7 @@ export default class HomeRenderer {
     {
        console.log('sha 3 inputs ', ethHelper.getConnectedAccountAddress(), newInvoiceData.refNumber, newInvoiceData.description, newInvoiceData.tokenAddress, newInvoiceData.tokenAmount, newInvoiceData.recipientAddress)
 
-      var digest = web3utils.soliditySha3({t: 'address', v: ethHelper.getConnectedAccountAddress()}, {t: 'uint256', v: newInvoiceData.refNumber }, {t: 'string', v: newInvoiceData.description }, {t: 'address', v: newInvoiceData.tokenAddress }, {t: 'uint256', v: newInvoiceData.tokenAmount }, {t: 'address', v: newInvoiceData.recipientAddress });
+      var digest = web3utils.soliditySha3(  {t: 'uint256', v: newInvoiceData.refNumber }, {t: 'string', v: newInvoiceData.description }, {t: 'address', v: newInvoiceData.tokenAddress }, {t: 'uint256', v: newInvoiceData.tokenAmount }, {t: 'address', v: newInvoiceData.recipientAddress }, {t: 'uint256', v: newInvoiceData.ethBlockExpiresAt });
 
       var digestBytes32 = web3utils.hexToBytes(digest)
       console.log('digestBytes32',digestBytes32)
@@ -210,7 +210,7 @@ export default class HomeRenderer {
     async createNewInvoice(  newInvoiceData )
     {
 
-      console.log('create new invoice ', newInvoiceData.refNumber, newInvoiceData.description,newInvoiceData.tokenAddress,newInvoiceData.tokenAmount,newInvoiceData.recipientAddress,newInvoiceData.blockExpiresAt)
+      console.log('create new invoice ', newInvoiceData.refNumber, newInvoiceData.description,newInvoiceData.tokenAddress,newInvoiceData.tokenAmount,newInvoiceData.recipientAddress,newInvoiceData.ethBlockExpiresAt)
 
 
       var web3 = ethereumHelper.getWeb3Instance();
@@ -231,7 +231,7 @@ export default class HomeRenderer {
       // await web3.eth.enable();
 
       var response =  await new Promise(function (result,error) {
-         paySpecContract.createInvoice.sendTransaction(newInvoiceData.refNumber,newInvoiceData.description,newInvoiceData.tokenAddress,newInvoiceData.tokenAmount,newInvoiceData.recipientAddress,newInvoiceData.blockExpiresAt, function(err,res){
+         paySpecContract.createInvoice.sendTransaction(newInvoiceData.refNumber,newInvoiceData.description,newInvoiceData.tokenAddress,newInvoiceData.tokenAmount,newInvoiceData.recipientAddress,newInvoiceData.ethBlockExpiresAt, function(err,res){
             if(err){ return error(err)}
 
             //console.log('res ', res)
