@@ -18,4 +18,8 @@ Will serve an express website with:
 
 3) a local API
   * can generate and store a pre-invoice and provide the 'show invoice' page URL
-  * can retrieve data from the ethereum blockchain related to the invoices state on-chain 
+  * can retrieve data from the ethereum blockchain related to the invoices state on-chain
+
+
+# SETUP
+* Duplicate sample.secrets.config.js to secrets.config.js and populate it properly

@@ -11,6 +11,16 @@ var accounts = {
     privateKey: '00000'
   },
 
+
+
+
 }
 
-exports.accounts = accounts
+var web3 = {
+  ropstenURL: 'https://ropsten.infura.io/v3/xxx';
+  mainnetURL: 'https://mainnet.infura.io/v3/xxx';
+
+}
+
+exports = {accounts:accounts, web3: web3}
+//exports.accounts = accounts
