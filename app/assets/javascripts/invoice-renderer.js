@@ -11,6 +11,7 @@ import ContractInterface from './contract-interface'
 
 var invoiceData;
 var payInvoiceInput;
+var submitInvoiceInput;
 
 var ethereumHelper;
 var invoiceUUID;
@@ -73,6 +74,8 @@ export default class InvoiceRenderer {
         this.initInvoiceDataTable()
 
         Vue.set(payInvoiceInput, 'web3connected', true)
+          Vue.set(submitInvoiceInput, 'web3connected', true)
+
 
         await this.loadInvoiceData( self )
 
@@ -102,6 +105,7 @@ export default class InvoiceRenderer {
              recipientAddress: '',
              tokenAddress: '',
              tokenAmount: '',
+             onChain: false,
              paidStatus: false,
           },
           methods: {
@@ -156,11 +160,40 @@ export default class InvoiceRenderer {
             })
 
 
+
+            submitInvoiceInput = new Vue({
+                el: '#submit-invoice-input',
+                data: {
+                   invoiceUUID: invoiceUUID,
+                   paidStatus: false,
+                   onChain:false,
+                   web3connected: false
+                },
+                methods: {
+                      keyUp: function (event) {
+                         //Vue.set(createInvoiceInput, 'showAvailability', false)
+                      },
+                      inputChange: function (event) {
+                        console.log('input change',  this.inputName, event)
+
+                      //  self.checkNameAvailability( this.inputName );
+                      },
+                      onSubmit: function (event){
+                        console.log('pay invoice ', this.invoiceUUID)
+                        //self.claimName( this.inputName )
+
+                        self.createAndPayInvoice( this.invoiceUUID )
+                      }
+                  }
+              })
+
+
                 payInvoiceInput = new Vue({
                     el: '#pay-invoice-input',
                     data: {
                        invoiceUUID: invoiceUUID,
                        paidStatus: false,
+                       onChain:false,
 
                        web3connected: false
                     },
@@ -173,7 +206,7 @@ export default class InvoiceRenderer {
 
                           //  self.checkNameAvailability( this.inputName );
                           },
-                          onSubmitNewInvoice: function (event){
+                          onSubmit: function (event){
                             console.log('pay invoice ', this.invoiceUUID)
                             //self.claimName( this.inputName )
 
@@ -280,11 +313,22 @@ export default class InvoiceRenderer {
                resolve( response  );
                })
           });
+
+
+
             Vue.set(invoiceData, 'paidStatus', wasPaid )
 
-            Vue.set(payInvoiceInput, 'paidStatus', wasPaid )
             Vue.set(approveTokensInput, 'paidStatus', wasPaid )
 
+            Vue.set(submitInvoiceInput, 'paidStatus', wasPaid )
+            Vue.set(payInvoiceInput, 'paidStatus', wasPaid )
+
+
+
+            Vue.set(invoiceData, 'onChain', true  )
+
+            Vue.set(submitInvoiceInput, 'onChain', true )
+            Vue.set(payInvoiceInput, 'onChain', true )
 
 
 
@@ -311,10 +355,21 @@ export default class InvoiceRenderer {
 
           var wasPaid = false;  //not on chain so cant be paid
 
+
+
+
+
           Vue.set(invoiceData, 'paidStatus', wasPaid )
 
-          Vue.set(payInvoiceInput, 'paidStatus', wasPaid )
           Vue.set(approveTokensInput, 'paidStatus', wasPaid )
+
+          Vue.set(payInvoiceInput, 'paidStatus', wasPaid )
+          Vue.set(submitInvoiceInput, 'paidStatus', wasPaid )
+
+          Vue.set(invoiceData, 'onChain', false )
+
+          Vue.set(payInvoiceInput, 'onChain', false )
+          Vue.set(submitInvoiceInput, 'onChain', false )
 
 
       }
@@ -390,6 +445,46 @@ export default class InvoiceRenderer {
         if (error) console.error(error)
         console.log('success!');
       })
+
+    }
+
+    async createAndPayInvoice(  invoiceUUID )
+    {
+
+      console.log('create and pay invoice ', invoiceUUID)
+
+      var invoice = await this.fetchOffchainInvoiceWithUUID(invoiceUUID)
+
+
+      var web3 = ethereumHelper.getWeb3Instance();
+
+      var env = ethereumHelper.getEnvironmentName()
+
+      console.log('env ',env)
+
+      var connectedAddress = ethereumHelper.getConnectedAccountAddress()
+
+      var paySpecContract = ContractInterface.getPaySpecContract(web3,env)
+
+
+       var currentEthBlock = await ethereumHelper.getCurrentEthBlockNumber()
+
+       var ethBlockExpiresAt = currentEthBlock + 2000
+      //web3.eth.defaultAccount = web3.eth.accounts[0]
+       //personal.unlockAccount(web3.eth.defaultAccount)
+
+
+      // await web3.eth.enable();
+//createAndPayInvoice(uint256 refNumber, string memory description,  address token, uint256 amountDue, address payTo, uint256 ethBlockExpiresAt )
+  console.log('send data', invoice.refNumber, invoice.description, invoice.tokenAddress, invoice.amountDue, invoice.recipientAddress, ethBlockExpiresAt)
+      var response =  await new Promise(function (result,error) {
+         paySpecContract.createAndPayInvoice.sendTransaction(invoice.refNumber, invoice.description, invoice.tokenAddress, invoice.amountDue, invoice.recipientAddress, ethBlockExpiresAt, function(err,res){
+            if(err){ return error(err)}
+
+            result(res);
+         })
+       });
+
 
     }
 

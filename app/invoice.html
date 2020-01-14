@@ -117,6 +117,10 @@
                     <td>Paid?</td>
                     <td>{{ paidStatus }}</td>
                   </tr>
+                  <tr>
+                    <td>Onchain?</td>
+                    <td>{{ onChain }}</td>
+                  </tr>
                 </tbody>
               </table>
 
@@ -185,6 +189,55 @@
 
 
 
+        <div class="columns">
+
+          <div class="content column is-6 is-offset-3">
+
+
+            <div id="submit-invoice-input" class="main-text box" v-if="!paidStatus && !onChain" v-cloak    >
+
+
+            <div class="whitespace-md"></div>
+
+
+            <div class="columns" >
+              <div class="column">
+                 <h4 class=" is-size-4 is-4 is-spaced">Submit Invoice</h4>
+              </div>
+              <!-- <div class="column">
+                <div class="pull-right" v-if='showAvailability' v-cloak>
+                  <span class="tag is-success" v-if='nametagAvailable'>Available</span>
+                  <span class="tag is-danger" v-if='!nametagAvailable'>Not Available</span>
+                </div>
+              </div> -->
+            </div>
+
+
+            <div class="field">
+              <label class="label"> Invoice ID </label>
+              <div class="control">
+                <input class="input is-large   " type="text" placeholder=" "  v-on:change="inputChange" v-on:keyup="keyUp" v-model='invoiceUUID'>
+              </div>
+             </div>
+
+
+
+              <div class="pull-right">
+                <div   class="button is-large" v-on:click='onSubmit'>
+                  <span class=" ">
+                    <i class="fab fa-ethereum" style="margin-right:1em"></i>
+                  </span>
+                  <span> Submit </span>
+                </div>
+              </div>
+
+
+              </div>
+
+          </div>
+
+
+        </div>
 
 
       <div class="columns">
@@ -192,7 +245,7 @@
         <div class="content column is-6 is-offset-3">
 
 
-          <div id="pay-invoice-input" class="main-text box" v-if="!paidStatus" v-cloak    >
+          <div id="pay-invoice-input" class="main-text box" v-if="!paidStatus && onChain" v-cloak    >
 
 
           <div class="whitespace-md"></div>
@@ -221,7 +274,7 @@
 
 
             <div class="pull-right">
-              <div   class="button is-large" v-on:click='onSubmitNewInvoice'>
+              <div   class="button is-large" v-on:click='onSubmit'>
                 <span class=" ">
                   <i class="fab fa-ethereum" style="margin-right:1em"></i>
                 </span>
