@@ -8,7 +8,7 @@ var QRCode = require('qrcode')
 
 
 import ContractInterface from './contract-interface'
- 
+
 var invoiceData;
 var payInvoiceInput;
 
@@ -22,7 +22,7 @@ export default class InvoiceRenderer {
 
 
 
-    init( ethHelper, params )
+    async init( ethHelper, params )
     {
       ethereumHelper = ethHelper;
       this.params = params;
@@ -31,10 +31,34 @@ export default class InvoiceRenderer {
       //initEthContainer()
 
 
+
+
     }
 
     update()
     {
+
+    }
+
+    async fetchOffchainInvoiceWithUUID(uuid)
+    {
+      var result = await new Promise((resolve, reject) => {
+        $.ajax({
+          url: '/invoice_data/'+uuid,
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          type: 'GET',
+          success: function(data) {
+            console.log('got ajax response', data )
+
+            resolve( data)
+          },
+          error: function(error) {
+            reject(error)
+          },
+        })
+      })
+
+      return result.invoice
 
     }
 
@@ -170,7 +194,6 @@ export default class InvoiceRenderer {
       var env = ethereumHelper.getEnvironmentName();
 
 
-
       var paySpecContract = ContractInterface.getPaySpecContract(web3,env)
 
       console.log('load invoice data')
@@ -180,82 +203,125 @@ export default class InvoiceRenderer {
   //    console.log( paySpecContract.getDescription(invoiceUUID).call()  )
 
 
-  let invoiceExists = await new Promise(resolve => {
-    paySpecContract.invoiceExists(invoiceUUID,  function(error,response){
-        console.log('res', response )
-        console.log('error', error)
-       resolve( response  );
-       })
-  });
-
-    console.log('invoice exists??')
-    Vue.set(invoiceData, 'invoiceExists', invoiceExists )
-
-
-
-      let amountDue = await new Promise(resolve => {
-        paySpecContract.getAmountDue(invoiceUUID,  function(error,response){
+      let onchainInvoiceExists = await new Promise(resolve => {
+        paySpecContract.invoiceExists(invoiceUUID,  function(error,response){
             console.log('res', response )
             console.log('error', error)
-           resolve( response.toNumber() );
+           resolve( response  );
            })
       });
-        Vue.set(invoiceData, 'tokenAmount', amountDue )
 
-        let tokenAddress = await new Promise(resolve => {
-          paySpecContract.getTokenAddress(invoiceUUID,  function(error,response){
+
+      if(onchainInvoiceExists)
+      {
+
+
+
+        console.log('invoice exists??')
+
+
+
+        let amountDue = await new Promise(resolve => {
+          paySpecContract.getAmountDue(invoiceUUID,  function(error,response){
+              console.log('res', response )
+              console.log('error', error)
+             resolve( response.toNumber() );
+             })
+        });
+          Vue.set(invoiceData, 'tokenAmount', amountDue )
+
+          let tokenAddress = await new Promise(resolve => {
+            paySpecContract.getTokenAddress(invoiceUUID,  function(error,response){
+                console.log('res', response )
+                console.log('error', error)
+               resolve( response );
+               })
+          });
+
+          Vue.set(invoiceData, 'tokenAddress', tokenAddress )
+          Vue.set(approveTokensInput, 'tokenAddress', tokenAddress )
+
+
+
+          let recipientAddress = await new Promise(resolve => {
+            paySpecContract.getRecipientAddress(invoiceUUID,  function(error,response){
+                console.log('res', response )
+                console.log('error', error)
+               resolve( response );
+               })
+          });
+
+          Vue.set(invoiceData, 'recipientAddress', recipientAddress )
+
+
+        let descrip = await new Promise(resolve => {
+          paySpecContract.getDescription(invoiceUUID,  function(error,response){
               console.log('res', response )
               console.log('error', error)
              resolve( response );
              })
         });
 
-        Vue.set(invoiceData, 'tokenAddress', tokenAddress )
-        Vue.set(approveTokensInput, 'tokenAddress', tokenAddress )
+        Vue.set(invoiceData, 'description', descrip )
 
-
-
-        let recipientAddress = await new Promise(resolve => {
-          paySpecContract.getRecipientAddress(invoiceUUID,  function(error,response){
+        let refNumber = await new Promise(resolve => {
+          paySpecContract.getRefNumber(invoiceUUID,  function(error,response){
               console.log('res', response )
               console.log('error', error)
-             resolve( response );
+             resolve( response.toNumber() );
              })
         });
+          Vue.set(invoiceData, 'referenceNumber', refNumber )
 
-        Vue.set(invoiceData, 'recipientAddress', recipientAddress )
+          let wasPaid = await new Promise(resolve => {
+            paySpecContract.invoiceWasPaid(invoiceUUID,  function(error,response){
+                console.log('res', response )
+                console.log('error', error)
+               resolve( response  );
+               })
+          });
+            Vue.set(invoiceData, 'paidStatus', wasPaid )
+
+            Vue.set(payInvoiceInput, 'paidStatus', wasPaid )
+            Vue.set(approveTokensInput, 'paidStatus', wasPaid )
 
 
-      let descrip = await new Promise(resolve => {
-        paySpecContract.getDescription(invoiceUUID,  function(error,response){
-            console.log('res', response )
-            console.log('error', error)
-           resolve( response );
-           })
-      });
 
-      Vue.set(invoiceData, 'description', descrip )
 
-      let refNumber = await new Promise(resolve => {
-        paySpecContract.getRefNumber(invoiceUUID,  function(error,response){
-            console.log('res', response )
-            console.log('error', error)
-           resolve( response.toNumber() );
-           })
-      });
-        Vue.set(invoiceData, 'referenceNumber', refNumber )
 
-        let wasPaid = await new Promise(resolve => {
-          paySpecContract.invoiceWasPaid(invoiceUUID,  function(error,response){
-              console.log('res', response )
-              console.log('error', error)
-             resolve( response  );
-             })
-        });
+
+      }else{
+        //try to get it from the mongo db offchain
+          var invoice = await this.fetchOffchainInvoiceWithUUID(invoiceUUID)
+          console.log('fetched' , invoice)
+
+          var offchainInvoiceExists = (invoice != null);
+
+
+          Vue.set(invoiceData, 'tokenAmount', invoice.amountDue )
+
+          Vue.set(invoiceData, 'tokenAddress', invoice.tokenAddress )
+          Vue.set(approveTokensInput, 'tokenAddress', invoice.tokenAddress )
+
+          Vue.set(invoiceData, 'recipientAddress', invoice.recipientAddress )
+
+          Vue.set(invoiceData, 'description', invoice.description )
+
+          Vue.set(invoiceData, 'referenceNumber', invoice.refNumber )
+
+          var wasPaid = false;  //not on chain so cant be paid
+
           Vue.set(invoiceData, 'paidStatus', wasPaid )
 
           Vue.set(payInvoiceInput, 'paidStatus', wasPaid )
           Vue.set(approveTokensInput, 'paidStatus', wasPaid )
+
+
+      }
+
+      console.log('invoice exists?', onchainInvoiceExists || offchainInvoiceExists)
+
+      Vue.set(invoiceData, 'invoiceExists', onchainInvoiceExists || offchainInvoiceExists )
 
 
 
