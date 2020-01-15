@@ -47,7 +47,7 @@ async function init()
   await mongoInterface.init(mongoInitParam)
 
 
-  await peerInterface.init(mongoInterface,web3) //initJSONRPCServer();
+  await peerInterface.init(mongoInterface,web3,environment) //initJSONRPCServer();
 
 
   await webServer.init(false ,  peerInterface)

@@ -2,6 +2,7 @@
 const $ = require('jquery');
 
 import logo from '../images/senderclogo.png'
+import favicon from '../images/favicon.png'
 import githubLogo from '../images/GitHub-Mark-64px.png'
 
 import Vue from 'vue'

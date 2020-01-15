@@ -40,7 +40,7 @@ var webpackPlugins = [
       }),
 
       new CopyWebpackPlugin([
-            {from:'app/assets/img',to:'app/assets/img'  }
+            {from:'app/assets/images',to:'app/assets/images'  }
         ])
 ]
 
