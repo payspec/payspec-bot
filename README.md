@@ -21,5 +21,15 @@ Will serve an express website with:
   * can retrieve data from the ethereum blockchain related to the invoices state on-chain
 
 
-# SETUP
-* Duplicate sample.secrets.config.js to secrets.config.js and populate it properly
+# INSTALL
+-NodeJS (npm install 8.16)
+-MongoDB (https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
+
+
+# CONFIG
+
+1) Duplicate sample.secrets.config.js to secrets.config.js and populate it properly
+
+2) npm run webpack
+
+3) npm run server
