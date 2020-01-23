@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.8.0",
+    "bignumber.js": "^9.0.0",
     "bn.js": "^4.11.8",
     "browserify": "^15.2.0",
     "bulma": "^0.6.2",
